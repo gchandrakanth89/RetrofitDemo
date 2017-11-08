@@ -16,11 +16,19 @@ public class Movie {
     @SerializedName("vote_count")
     private int count;
 
+    @SerializedName("release_date")
+    private String releaseDate;
 
-    public Movie(int id, String title, int count) {
+    @SerializedName("overview")
+    private String overview;
+
+
+    public Movie(int id, String title, int count, String releaseDate, String overview) {
         this.id = id;
         this.title = title;
         this.count = count;
+        this.releaseDate = releaseDate;
+        this.overview = overview;
     }
 
     public int getId() {
@@ -33,5 +41,13 @@ public class Movie {
 
     public int getCount() {
         return count;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public String getOverview() {
+        return overview;
     }
 }

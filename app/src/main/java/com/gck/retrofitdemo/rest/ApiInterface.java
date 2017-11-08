@@ -15,7 +15,7 @@ public interface ApiInterface {
 
     //http://api.themoviedb.org/3/movie/top_rated?api_key=f63880e16a5d4012106788dc7ef851e6
     @GET("movie/top_rated")
-    Call<MovieResponse> getTopRetedMovies(@Query("api_key") String apiKey);
+    Call<MovieResponse> getTopRetedMovies(@Query("api_key") String apiKey, @Query("page") int page);
 
     //http://api.themoviedb.org/3/movie/19404?api_key=f63880e16a5d4012106788dc7ef851e6
     @GET("movie/{id}")

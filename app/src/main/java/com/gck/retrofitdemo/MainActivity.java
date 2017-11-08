@@ -2,8 +2,11 @@ package com.gck.retrofitdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.gck.retrofitdemo.adapters.MoviesAdapter;
 import com.gck.retrofitdemo.model.Movie;
 import com.gck.retrofitdemo.model.MovieResponse;
 import com.gck.retrofitdemo.rest.ApiClient;
@@ -25,14 +28,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
 
-        Call<MovieResponse> call = apiService.getTopRetedMovies(API_KEY);
+        Call<MovieResponse> call = apiService.getTopRetedMovies(API_KEY, 2);
         call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 List<Movie> movieList = response.body().getMovieList();
+                recyclerView.setAdapter(new MoviesAdapter(movieList, R.layout.list_item_movie, getApplicationContext()));
                 int totalResults = response.body().getTotalResults();
                 Log.d(TAG, "onResponse: movieList.size() = " + movieList.size() + ", totalResults = " + totalResults);
             }
@@ -40,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.toString(), t);
+
             }
         });
     }
