@@ -22,6 +22,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
     private List<Movie> movies;
     private int rowLayout;
     private Context context;
+    private boolean isLoadingAdded;
+
+    private static final int ITEM = 0;
+    private static final int LOADING = 1;
 
     public MoviesAdapter(List<Movie> movies, int rowLayout, Context context) {
         this.movies = movies;
@@ -31,16 +35,40 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
 
     @Override
     public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(rowLayout, parent, false);
-        return new MovieHolder(view);
+
+        MovieHolder movieHolder = null;
+        switch (viewType) {
+            case ITEM:
+                View view = LayoutInflater.from(parent.getContext()).inflate(rowLayout, parent, false);
+                movieHolder = new NormalVH(view);
+                break;
+            case LOADING:
+
+                View view2 = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
+                movieHolder = new LoadingVH(view2);
+
+                break;
+        }
+
+        return movieHolder;
     }
 
     @Override
     public void onBindViewHolder(MovieHolder holder, int position) {
-        holder.movieTitle.setText(movies.get(position).getTitle());
-        holder.data.setText(movies.get(position).getReleaseDate());
-        holder.movieDescription.setText(movies.get(position).getOverview());
-        holder.rating.setText(movies.get(position).getCount()+"");
+        //Movie movie = movies.get(position);
+        switch (getItemViewType(position)) {
+            case ITEM:
+                NormalVH nHolder = (NormalVH) holder;
+                nHolder.movieTitle.setText(movies.get(position).getTitle());
+                nHolder.data.setText(movies.get(position).getReleaseDate());
+                nHolder.movieDescription.setText(movies.get(position).getOverview());
+                nHolder.rating.setText(movies.get(position).getCount() + "");
+                break;
+            case LOADING:
+                //Do nothing
+                break;
+        }
+
     }
 
     @Override
@@ -48,15 +76,37 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
         return movies.size();
     }
 
-    public static class MovieHolder extends RecyclerView.ViewHolder{
 
+    @Override
+    public int getItemViewType(int position) {
+        return position == movies.size() - 1 && isLoadingAdded ? LOADING : ITEM;
+    }
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
+    }
+
+    public static class MovieHolder extends RecyclerView.ViewHolder {
+
+
+        public MovieHolder(View v) {
+            super(v);
+
+        }
+    }
+
+    public static class NormalVH extends MovieHolder {
         LinearLayout moviesLayout;
         TextView movieTitle;
         TextView data;
         TextView movieDescription;
         TextView rating;
 
-        public MovieHolder(View v) {
+        public NormalVH(View v) {
             super(v);
             moviesLayout = (LinearLayout) v.findViewById(R.id.movies_layout);
             movieTitle = (TextView) v.findViewById(R.id.title);
@@ -66,5 +116,62 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieHolde
         }
     }
 
+    public static class LoadingVH extends MovieHolder {
 
+        public LoadingVH(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public void add(Movie mc) {
+        movies.add(mc);
+        notifyItemInserted(movies.size() - 1);
+    }
+
+    public void addAll(List<Movie> mcList) {
+        for (Movie mc : mcList) {
+            add(mc);
+        }
+    }
+
+    public void remove(Movie city) {
+        int position = movies.indexOf(city);
+        if (position > -1) {
+            movies.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public Movie getItem(int position) {
+        return movies.get(position);
+    }
+
+    public void clear() {
+        isLoadingAdded = false;
+        while (getItemCount() > 0) {
+            remove(getItem(0));
+        }
+    }
+
+    public boolean isEmpty() {
+        return getItemCount() == 0;
+    }
+
+    public void addLoadingFooter() {
+        isLoadingAdded = true;
+        //Add dummy object
+        add(new Movie(0, "", 0, "", ""));
+    }
+
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+
+        int position = movies.size() - 1;
+        Movie item = getItem(position);
+
+        if (item != null) {
+            movies.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
 }
