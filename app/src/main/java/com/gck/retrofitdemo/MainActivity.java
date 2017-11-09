@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentPage != totalPages) {
                     moviesAdapter.addLoadingFooter();
                 } else {
-                    //isLastPage = true;
+                    isLastPage = true;
                 }
 
             }
