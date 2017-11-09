@@ -121,21 +121,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.toString(), t);
-                isLoading = false;
 
             }
         });
-
-
-
-        /*List<Movie> movies = Movie.createMovies(adapter.getItemCount());
-
-        adapter.removeLoadingFooter();
-        isLoading = false;
-
-        adapter.addAll(movies);
-
-        if (currentPage != totalPages) adapter.addLoadingFooter();
-        else isLastPage = true;*/
     }
 }
