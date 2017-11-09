@@ -25,9 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private boolean isLoading = false;
+    private boolean isLoadingSuccess = true;
 
     private static final int PAGE_START = 1;
-    private int totalPages = 3;
+    private int totalPages;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private MoviesAdapter moviesAdapter;
@@ -69,8 +70,10 @@ public class MainActivity extends AppCompatActivity {
     PaginationScrollListener onScrollListener = new PaginationScrollListener() {
         @Override
         protected void loadMoreItems() {
+            if(isLoadingSuccess) {
+                currentPage += 1; //Increment page index to load the next one
+            }
             isLoading = true;
-            currentPage += 1; //Increment page index to load the next one
             loadNextPage();
         }
 
@@ -87,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean isLoading() {
             return isLoading;
+        }
+
+        @Override
+        public boolean isLoadingSuccuess() {
+            return false;
         }
     };
 
@@ -108,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 List<Movie> movieList = response.body().getMovieList();
                 moviesAdapter.removeLoadingFooter();
                 isLoading = false;
+                isLoadingSuccess = true;
                 moviesAdapter.addAll(movieList);
 
                 if (currentPage != totalPages) {
@@ -121,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.toString(), t);
-
+                isLoading = false;
+                isLoadingSuccess = false;
             }
         });
     }

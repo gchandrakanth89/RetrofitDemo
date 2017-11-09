@@ -44,4 +44,6 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
     public abstract boolean isLastPage();
 
     public abstract boolean isLoading();
+
+    public abstract boolean isLoadingSuccuess();
 }
